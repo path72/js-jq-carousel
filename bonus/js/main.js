@@ -26,7 +26,6 @@ prevBtn.mouseleave(function() { arrL.removeClass('highlight'); arrL.css(scaleDow
 nextBtn.mouseenter(function() { arrR.addClass('highlight');    arrR.css(scaleUp);   });
 nextBtn.mouseleave(function() { arrR.removeClass('highlight'); arrR.css(scaleDown); });
 
-
 // *********************** doc ready end ***
 });
 
@@ -35,18 +34,24 @@ nextBtn.mouseleave(function() { arrR.removeClass('highlight'); arrR.css(scaleDow
 
 function btnClick(_new) {
   var activeImg = $('.active');
-  var firstImgBol = activeImg.hasClass('first');
-  var lastImgBol  = activeImg.hasClass('last');
   var newImg;
-  if (firstImgBol && _new == 'prev') {
-    newImg = $('.last');
-  } else if (lastImgBol && _new == 'next') {
-    newImg = $('.first');
-  } else {
-    newImg = (_new == 'next') ? activeImg.next(): activeImg.prev();
-  }
+  
+  // senza identificare in html prima e ultima immagine
+  var firstImg = $('.img_container > img:first-child'); 
+  var lastImg  = $('.img_container > img:last-child');
+  if      (activeImg[0] == firstImg[0] && _new == 'prev') newImg = lastImg;
+  else if (activeImg[0] == lastImg[0]  && _new == 'next') newImg = firstImg;
+  else    newImg = (_new == 'next') ? activeImg.next(): activeImg.prev();
+
+  // identificando in html prima e ultima immagine con classi first/last
+  // var firstImgBool = activeImg.hasClass('first'); 
+  // var lastImgBool  = activeImg.hasClass('last'); 
+  // if      (firstImgBool && _new == 'prev') newImg = $('.last');
+  // else if (lastImgBool  && _new == 'next') newImg = $('.first');
+  // else    newImg = (_new == 'next') ? activeImg.next(): activeImg.prev();
+  
   // image switch (to be animated)
-  activeImg.removeClass('active');
+  activeImg.removeClass('active'); 
   newImg.addClass('active');
 }
 
