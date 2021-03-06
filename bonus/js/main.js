@@ -4,27 +4,11 @@
 $(document).ready(function() {
 // ********************* doc ready start ***
 
-// ** BUTTONS **
-var prevBtn = $('.prev_btn'); //console.log(prevBtn);
-var nextBtn = $('.next_btn'); //console.log(nextBtn);
+// ** BUTTON INIT **
+btnInit();
 
-// ** INTERACTIONS **
-prevBtn.click(function() { btnClick('prev'); });
-nextBtn.click(function() { btnClick('next'); });
-$('body').keydown(function(_ev) {
-  if      (_ev.keyCode == 37) { btnClick('prev'); }
-  else if (_ev.keyCode == 39) { btnClick('next'); }
-});
-
-// ** VISUAL EFFECTS **
-var arrL = $('.fa-angle-left');
-var arrR = $('.fa-angle-right');
-var scaleUp   = { 'transition': '0.1s ease-in', 'transform': 'scale(1.2)' };
-var scaleDown = { 'transition': '0.1s ease-in', 'transform': 'scale(1.0)' };
-prevBtn.mouseenter(function() { arrL.addClass('highlight');    arrL.css(scaleUp);   });
-prevBtn.mouseleave(function() { arrL.removeClass('highlight'); arrL.css(scaleDown); });
-nextBtn.mouseenter(function() { arrR.addClass('highlight');    arrR.css(scaleUp);   });
-nextBtn.mouseleave(function() { arrR.removeClass('highlight'); arrR.css(scaleDown); });
+// ** NAV INIT ** 
+navInit();
 
 // *********************** doc ready end ***
 });
@@ -32,26 +16,98 @@ nextBtn.mouseleave(function() { arrR.removeClass('highlight'); arrR.css(scaleDow
 //###################################################### 
 // FUNCTIONS
 
-function btnClick(_new) {
-  var activeImg = $('.active');
-  var newImg;
-  
-  // senza identificare in html prima e ultima immagine
-  var firstImg = $('.img_container > img:first-child'); 
-  var lastImg  = $('.img_container > img:last-child');
-  if      (activeImg[0] == firstImg[0] && _new == 'prev') newImg = lastImg;
-  else if (activeImg[0] == lastImg[0]  && _new == 'next') newImg = firstImg;
-  else    newImg = (_new == 'next') ? activeImg.next(): activeImg.prev();
-
-  // identificando in html prima e ultima immagine con classi first/last
-  // var firstImgBool = activeImg.hasClass('first'); 
-  // var lastImgBool  = activeImg.hasClass('last'); 
-  // if      (firstImgBool && _new == 'prev') newImg = $('.last');
-  // else if (lastImgBool  && _new == 'next') newImg = $('.first');
-  // else    newImg = (_new == 'next') ? activeImg.next(): activeImg.prev();
-  
-  // image switch (to be animated)
-  activeImg.removeClass('active'); 
-  newImg.addClass('active');
+// ** INIT **
+function btnInit() {
+  $('.prev_btn').click(function() { btnClick('prev'); });
+  $('.next_btn').click(function() { btnClick('next'); });
+  $('body').keydown(function(_ev) {
+    if      (_ev.keyCode == 37) { btnClick('prev'); }
+    else if (_ev.keyCode == 39) { btnClick('next'); }
+  });
+  arrowVisualEffectInit();
+}
+function navInit() {
+  var fa0 = '<i class="far fa-circle"></i>',
+      fa1 = '<i class="fas fa-circle"></i>',  
+      faListHtml = '',
+      N = getActiveImageOfSet();
+  for (var i=1; i<=N[1]; i++) faListHtml += (i==N[0]) ? fa1 : fa0;
+  $('.nav').html(faListHtml);
+  $('.fa-circle.fas').css( 'color', 'var(--purple)');
+  $('.fa-circle')
+    .css({ 'font-size':'1em','padding':'5px 5px', 'cursor':'pointer' })
+    .click(function(){ navClick($(this)); });
+}
+function arrowVisualEffectInit() {
+  var pBtn = $('.prev_btn'),
+      nBtn = $('.next_btn'),
+      arrL = $('.fa-angle-left'),
+      arrR = $('.fa-angle-right'),
+      scaleUp   = { 'transition': '0.1s ease-in', 'transform': 'scale(1.2)' },
+      scaleDown = { 'transition': '0.1s ease-in', 'transform': 'scale(1.0)' };
+  pBtn.mouseenter(function() { arrL.addClass('highlight');    arrL.css(scaleUp);   });
+  pBtn.mouseleave(function() { arrL.removeClass('highlight'); arrL.css(scaleDown); });
+  nBtn.mouseenter(function() { arrR.addClass('highlight');    arrR.css(scaleUp);   });
+  nBtn.mouseleave(function() { arrR.removeClass('highlight'); arrR.css(scaleDown); });
 }
 
+// ** CLICK ** 
+function btnClick(_shift) {
+  var N = getActiveImageOfSet(), newPos = null;
+  if      (N[0] == 1     && _shift == 'prev') newPos = N[1];
+  else if (N[0] == N[1]  && _shift == 'next') newPos = 1;
+  else    newPos = (_shift == 'next') ? (N[0]+1) : (N[0]-1);
+  imgUpdate(newPos);
+  navUpdate();
+}
+function navClick(_navBtn) {
+  var navBtnSet = $('.nav > .fa-circle'), newPos = null;
+  for (var i=0; i<navBtnSet.length; i++) {
+    if (_navBtn[0] == navBtnSet[i]) newPos = i+1;
+  }
+  if (newPos != getActiveImageOfSet()[0]) imgUpdate(newPos);
+}
+
+// ** VISUAL DYNAMICS ** 
+function imgUpdate(_newPos) {
+  var N = getActiveImageOfSet();
+  for (var i=1; i<=N[1]; i++) {
+    var img = $('.img_container > img:nth-child('+i+')');
+    if (i == N[0]) {
+      img.removeClass('active');
+    } else if (i == _newPos) {
+      img.addClass('active');
+    }
+  }
+  navUpdate();
+}
+function navUpdate() {
+  var N = getActiveImageOfSet();  
+  for (var i=1; i<=N[1]; i++) {
+    var fa = $('.nav > .fa-circle:nth-child('+i+')');
+    if (i == N[0]) {
+      fa.addClass('fas');
+      fa.removeClass('far');
+      fa.css( 'color', 'var(--purple)');
+    } else {
+      fa.addClass('far');
+      fa.removeClass('fas');
+      fa.css( 'color', 'var(--black)');
+    }
+  }
+}
+
+// ** KEY TOOL **
+function getActiveImageOfSet() {
+  /**
+   * N[0] active image position
+   * N[1] total number of images
+   */
+  var imgSet = $('.img_container > img');
+  var N = [null,imgSet.length];
+  for (var i=1; i<=N[1]; i++) {
+    var img = $('.img_container > img:nth-child('+i+')');
+    if (img.hasClass('active')) N[0] = i;
+  }
+  return N;
+}
