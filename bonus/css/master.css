@@ -103,8 +103,9 @@ main .wrapper .nav_container {
   display: flex; /* larghezza .nav variabile con il numero di immagini */
   position: absolute;
   bottom: 0;
+  left: 0;
   width: 100%;
-  padding: 0 0 20px;
+  padding-bottom: 20px;
 }
 main .wrapper .nav_container .nav {
   display: flex;
