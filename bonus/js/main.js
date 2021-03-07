@@ -32,7 +32,6 @@ function navInit(_firstActiveImagePos) {
 	var fa0 = '<i class="far fa-circle"></i>', faSet = '';
 	for (var i=1; i<=getActiveImageOfASet().tot; i++) faSet += fa0;
 	$('.nav').html(faSet);
-	$('.fa-circle.fas').css( 'color', 'var(--purple)');
 	$('.fa-circle')
 		.css({ 'font-size':'1em', 'padding':'4px 3px', 'cursor':'pointer' })
 		.click(function(){ navClick($(this)); }); // $(this) is the clicked $('.fa-circle')
@@ -76,7 +75,7 @@ function navClick(_navBtn) { // _navBtn jQ object (clicked nav button)
 		newPos = null;
 	// clicked nav button > get position in set
 	for (var i=0; i<navBtnSet.length; i++) {
-		if (_navBtn[0] == navBtnSet[i]) newPos = i+1;
+		if (_navBtn[0] == navBtnSet[i]) newPos = i+1; // comparison between html structures
 	}
 	if (newPos != getActiveImageOfASet().pos) imgUpdate(newPos);
 }
