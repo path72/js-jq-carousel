@@ -124,3 +124,18 @@ main .wrapper .nav_container .nav {
   font-size: 1.2em;
   font-weight: 700;
 }
+.ms_txt_2 {
+  font-size: 1.2em;
+  font-weight: 700;
+  padding: 30px;
+}
+
+/****************************************************************
+**  UTILITY
+*/
+/* flex centered wrappers */
+.ms_fx_w1c {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

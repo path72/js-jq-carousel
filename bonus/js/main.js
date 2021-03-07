@@ -28,14 +28,14 @@ function btnInit() {
 }
 function navInit() {
   var fa0 = '<i class="far fa-circle"></i>',
-      fa1 = '<i class="fas fa-circle"></i>',  
+      fa1 = '<i class="fas fa-circle"></i>',
       faListHtml = '',
       N = getActiveImageOfSet();
   for (var i=1; i<=N[1]; i++) faListHtml += (i==N[0]) ? fa1 : fa0;
   $('.nav').html(faListHtml);
   $('.fa-circle.fas').css( 'color', 'var(--purple)');
   $('.fa-circle')
-    .css({ 'font-size':'1em','padding':'5px 5px', 'cursor':'pointer' })
+    .css({ 'font-size':'1em','padding':'3px 4px', 'cursor':'pointer' })
     .click(function(){ navClick($(this)); });
 }
 function arrowVisualEffectInit() {
