@@ -1,11 +1,40 @@
-//###################################################### 
+
+/** [OK]
+ ** .index() 
+ * $(elemento).index()
+ * indice di elemento tra i suoi siblings uguali
+ * 
+ * 
+ * [OK]
+ ** .each() 
+ al posto del ciclo for sul jQuery-array
+ * $('btn').each(function(){
+ * 	$(this).action()
+ * }) 
+ * [OK]
+ ** .append()
+ ** .prepend()
+ * $(padre).append(figlio)
+ * $(padre).prepend(figlio)
+ * appende un figlio al padre specificato
+ * in coda / in testa ad altri siblings se presenti
+ * 
+ * 
+ ** .appendTo()
+ ** .prependTo()
+ * $(padre).appendTo(figlio)
+ * $(padre).prependTo(figlio)
+ * 
+ */
+
+ //###################################################### 
 // DYNAMICS
 
 $(document).ready(function() {
 // ********************* doc ready start ***
 
 
-var firstActiveImagePos = 3;
+var firstActiveImagePos = Math.floor(Math.random()*(getActiveImageOfASet().tot))+1;
 
 // ** KICK-OFF **
 
@@ -29,9 +58,8 @@ function navInit(_firstActiveImagePos) {
 	 * <i class="fas fa-circle"></i> selected
 	 * <i class="far fa-circle"></i> unselected
 	 */
-	var fa0 = '<i class="far fa-circle"></i>', faSet = '';
-	for (var i=1; i<=getActiveImageOfASet().tot; i++) faSet += fa0;
-	$('.nav').html(faSet);
+	var fa0 = '<i class="far fa-circle"></i>';
+	for (var i=1; i<=getActiveImageOfASet().tot; i++) $('.nav').append(fa0);;
 	$('.fa-circle')
 		.css({ 'font-size':'1em', 'padding':'4px 3px', 'cursor':'pointer' })
 		.click(function(){ navClick($(this)); }); // $(this) is the clicked $('.fa-circle')
@@ -71,42 +99,35 @@ function btnKeyClick(_shift) {
 	imgUpdate(newPos);
 }
 function navClick(_navBtn) { // _navBtn jQ object (clicked nav button)
-	var navBtnSet = $('.nav > .fa-circle'), // jQ object-array > navBtnSet[i]: single html structure 
-		newPos = null;
-	// clicked nav button > get position in set
-	for (var i=0; i<navBtnSet.length; i++) {
-		if (_navBtn[0] == navBtnSet[i]) newPos = i+1; // comparison between html structures
-	}
+	var newPos = _navBtn.index() + 1;
 	if (newPos != getActiveImageOfASet().pos) imgUpdate(newPos);
 }
 
 // *** VISUAL DYNAMICS ***
 function imgUpdate(_newPos) {
-	var actPosTot = getActiveImageOfASet();
-	for (var i=1; i<=actPosTot.tot; i++) {
-		var img = $('.img_container > img:nth-child('+i+')'); // jQ obcject
-		if (i == actPosTot.pos) {
-			img.removeClass('active');
-		} else if (i == _newPos) {
-			img.addClass('active');
+	var oldImg = getActiveImageOfASet();
+	$('.img_container').children('img').each(function(_index) {
+		if ((_index + 1) == oldImg.pos) {
+			$(this).removeClass('active');
+		} else if ((_index + 1) == _newPos) {
+			$(this).addClass('active');
 		}
-	}
+	});
 	navUpdate();
 }
 function navUpdate() {
-	var actPosTot = getActiveImageOfASet();  
-	for (var i=1; i<=actPosTot.tot; i++) {
-		var fa = $('.nav > .fa-circle:nth-child('+i+')'); // jQ obcject
-		if (i == actPosTot.pos) {
-			fa.addClass('fas');
-			fa.removeClass('far');
-			fa.css( 'color', 'var(--purple)');
+	$('.nav').find('.fa-circle').each(function(_index) {
+		var t = $(this);
+		if ((_index + 1) == getActiveImageOfASet().pos) {
+			t.addClass('fas');
+			t.removeClass('far');
+			t.css( 'color', 'var(--purple)');
 		} else {
-			fa.addClass('far');
-			fa.removeClass('fas');
-			fa.css( 'color', 'var(--black)');
+			t.addClass('far');
+			t.removeClass('fas');
+			t.css( 'color', 'var(--black)');
 		}
-	}
+	});
 }
 
 // *** KEY TOOL ***
@@ -115,11 +136,10 @@ function getActiveImageOfASet() {
 	 * .pos: active image position in a set
 	 * .tot: total number of images in the set
 	 */
-	var imgSet = $('.img_container > img'), // jQ object-array > imgSet[i]: single html structure 
-		obj = { 'pos': null,'tot': imgSet.length };
-	for (var i=1; i<=obj.tot; i++) {
-		var img = $('.img_container > img:nth-child('+i+')'); // jQ object
-		if (img.hasClass('active')) obj.pos = i;
-	}
+	var imgSet = $('.img_container').children('img'), // jQ object-array
+		obj = { 'pos': null, 'tot': imgSet.length };
+	imgSet.each(function(_index) {
+		if ($(this).hasClass('active')) obj.pos = _index + 1;
+	});
 	return obj;
 }
